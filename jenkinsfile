@@ -13,21 +13,18 @@ pipeline {
             }
         }
         
-        stage('Install Dependencies') {
+        stage('Install Dependencies & Deploy') {
             steps {
-                sh '''
-                    npm install
-                    npm install -g netlify-cli
-                '''
-            }
-        }
-        
-        stage('Build & Deploy') {
-            steps {
-                sh '''
-                    npm run build || echo "No build script found"
-                    netlify deploy --prod --dir=. --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
-                '''
+                script {
+                    docker.image('node:20-alpine').inside('-u root:root') {
+                        sh '''
+                            npm install
+                            npm install -g netlify-cli
+                            npm run build || echo "No build script found"
+                            netlify deploy --prod --dir=. --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
+                        '''
+                    }
+                }
             }
         }
     }
