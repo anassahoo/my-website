@@ -1,45 +1,48 @@
 pipeline {
-    agent any
-
-    environment {
-        NETLIFY_AUTH_TOKEN = credentials('netlify-token')
-        SITE_ID = 'cca50abf-c688-433b-b11b-b825d72980ef4'
+    agent {
+        docker {
+            image 'node:20-alpine'
+            args '-u root:root'
+        }
     }
-
+    
+    environment {
+        NETLIFY_SITE_ID = credentials('netlify-token')
+        NETLIFY_AUTH_TOKEN = credentials('cca50abf-c688-433b-b11b-825d72980ef4')
+    }
+    
     stages {
         stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/anassahoo/my-website.git'
             }
         }
-
-        stage('Install Node & Netlify CLI') {
+        
+        stage('Install Dependencies') {
             steps {
                 sh '''
-                curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-                apt-get install -y nodejs
-                npm install -g netlify-cli
+                    npm install
+                    npm install -g netlify-cli
                 '''
             }
         }
-
+        
         stage('Build & Deploy') {
             steps {
                 sh '''
-                mkdir -p dist
-                cp index.html *.css *.js dist/
-                netlify deploy --dir=dist --prod --auth=$NETLIFY_AUTH_TOKEN --site=$SITE_ID
+                    npm run build || echo "No build script found"
+                    netlify deploy --prod --dir=. --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
                 '''
             }
         }
     }
-
+    
     post {
         success {
-            echo "✅ Deployment successful!"
+            echo '✅ Pipeline succeeded!'
         }
         failure {
-            echo "❌ Pipeline failed. Check logs."
+            echo '❌ Pipeline failed. Check logs.'
         }
     }
 }
