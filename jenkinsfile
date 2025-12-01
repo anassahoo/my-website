@@ -1,6 +1,11 @@
 pipeline {
     agent any
     
+    environment {
+        NETLIFY_SITE_ID = credentials('netlify-token-site')
+        NETLIFY_AUTH_TOKEN = credentials('netlify-token')
+    }
+    
     stages {
         stage('Checkout Code') {
             steps {
@@ -8,15 +13,22 @@ pipeline {
             }
         }
         
-        stage('Test Docker') {
+        stage('Install Dependencies & Deploy') {
             steps {
                 script {
                     docker.image('node:20-alpine').inside('-u root:root') {
                         sh '''
-                            echo "Testing Docker..."
-                            node --version
-                            npm --version
-                            echo "Docker is working!"
+                            echo "Installing dependencies..."
+                            npm install
+                            
+                            echo "Installing Netlify CLI..."
+                            npm install -g netlify-cli
+                            
+                            echo "Building project..."
+                            npm run build || echo "No build script found"
+                            
+                            echo "Deploying to Netlify..."
+                            netlify deploy --prod --dir=. --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
                         '''
                     }
                 }
@@ -26,7 +38,7 @@ pipeline {
     
     post {
         success {
-            echo '✅ Pipeline succeeded!'
+            echo '✅ Pipeline succeeded! Your site is deployed to Netlify!'
         }
         failure {
             echo '❌ Pipeline failed. Check logs.'
