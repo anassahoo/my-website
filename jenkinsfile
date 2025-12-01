@@ -13,19 +13,13 @@ pipeline {
             }
         }
         
-        stage('Install Dependencies & Deploy') {
+        stage('Deploy to Netlify') {
             steps {
                 script {
                     docker.image('node:20-alpine').inside('-u root:root') {
                         sh '''
-                            echo "Installing dependencies..."
-                            npm install
-                            
                             echo "Installing Netlify CLI..."
                             npm install -g netlify-cli
-                            
-                            echo "Building project..."
-                            npm run build || echo "No build script found"
                             
                             echo "Deploying to Netlify..."
                             netlify deploy --prod --dir=. --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
