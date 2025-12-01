@@ -1,0 +1,136 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+.container {
+  width: 100%;
+  max-width: 800px;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+.container h1 {
+  font-size: 2.5rem;
+  padding-bottom: 15px;
+  text-align: center;
+}
+.container p {
+  color: #636e72;
+  font-size: 1.1rem;
+  text-align: center;
+}
+.search input {
+  width: 78%;
+  /* height: 43px; */
+  margin: 20px 10px 40px 0px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  font-size: 17px;
+  padding: 17px;
+  transition: all 0.2s ease;
+}
+.search input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+.search button {
+  padding: 10px 25px;
+  background: #667eea;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
+}
+
+button:hover {
+  background: #764ba2;
+  transform: translateY(-2px);
+}
+
+.result {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+.result img {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  margin: 0 auto 20px;
+  display: block;
+  border:1px solid #ddd;
+  border-radius: 10px;
+}
+.country-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.country-info .info {
+  text-align: center;
+  background: #f8f9fa;
+  border-radius: 5px;
+  padding: 20px;
+}
+.info h3 {
+  color: #2d3436;
+  margin-bottom: 5px;
+  font-size: 1.1em;
+}
+.info p {
+  color: #636e72;
+}
+.hidden {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .container {
+    box-shadow: none;
+  }
+  body {
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  .container h1 {
+    font-size: 1.8rem;
+  }
+
+  .container p {
+    font-size: 1.1rem;
+  }
+  .search input {
+    width: 100%;
+    margin: 20px 0 20px 0;
+    font-size: 16px;
+    padding: 15px;
+  }
+
+  .search button {
+    width: 100%;
+    margin-top: 8px;
+    font-size: 1rem;
+    padding: 12px;
+  }
+  .result {
+    margin-top: 10px;
+  }
+  .country-info {
+    gap: 15px;
+  }
+}
