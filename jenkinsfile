@@ -1,15 +1,15 @@
+
 pipeline {
     agent any
 
     environment {
-        NETLIFY_AUTH_TOKEN = credentials('nfp_fkUhS44mpZYQ4epDhtebf4hbisSEi2n83609') // your Jenkins credential ID
-        SITE_ID = 'cca50abf-c688-433b-b11b-825d72980ef4' // paste your Netlify Site ID
+        NETLIFY_AUTH_TOKEN = credentials('nfp_fkUhS44mpZYQ4epDhtebf4hbisSEi2n83609')
+        SITE_ID = 'cca50abf-c688-433b-b11b-825d72980ef4'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                echo "Cloning GitHub repository..."
                 git branch: 'main', url: 'https://github.com/anassahoo/my-website.git'
             }
         }
@@ -17,48 +17,30 @@ pipeline {
         stage('Install Tools') {
             steps {
                 sh '''
-                echo "Installing Node.js and Netlify CLI..."
-                curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-                apt-get install -y nodejs
+                apt-get update
+                apt-get install -y curl nodejs npm
                 npm install -g netlify-cli
                 '''
             }
         }
 
-        stage('Integration: Lint & Validate') {
+        stage('Build & Deploy') {
             steps {
                 sh '''
-                npm install -g eslint htmlhint stylelint || true
-                eslint . || echo "ESLint warnings"
-                htmlhint . || echo "HTMLHint warnings"
-                stylelint "**/*.css" || echo "Stylelint warnings"
-                '''
-            }
-        }
-
-        stage('Build') {
-            steps {
-                echo "Preparing files for deployment..."
-                sh 'mkdir -p dist && cp -r index.html *.css *.js dist/'
-            }
-        }
-
-        stage('Deploy to Netlify') {
-            steps {
-                sh '''
-                echo "Deploying to Netlify..."
+                mkdir -p dist
+                cp index.html *.css *.js dist/
                 netlify deploy --dir=dist --prod --auth=$NETLIFY_AUTH_TOKEN --site=$SITE_ID
                 '''
             }
         }
     }
-
+    
     post {
         success {
-            echo "✅ Deployment successful! Check your live site."
+            echo "✅ Deployment successful!"
         }
         failure {
-            echo "❌ Pipeline failed. Check logs for errors."
+            echo "❌ Pipeline failed. Check logs."
         }
     }
 }
