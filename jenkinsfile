@@ -1,9 +1,13 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:20-bullseye'   // Node.js + npm preinstalled
+        }
+    }
 
     environment {
-        NETLIFY_AUTH_TOKEN = credentials('netlify-token')
-        SITE_ID = 'cca50abf-c688-433b-b11b-b11b-825d72980ef4'
+        NETLIFY_AUTH_TOKEN = credentials('netlify-token')  // Replace with your Jenkins credential ID
+        SITE_ID = 'cca50abf-c688-433b-b11b-b11b-825d72980ef4' // Your Netlify Site ID
     }
 
     stages {
@@ -13,13 +17,9 @@ pipeline {
             }
         }
 
-        stage('Install Tools') {
+        stage('Install Netlify CLI') {
             steps {
-                sh '''
-                apt-get update
-                apt-get install -y curl nodejs npm
-                npm install -g netlify-cli
-                '''
+                sh 'npm install -g netlify-cli'
             }
         }
 
