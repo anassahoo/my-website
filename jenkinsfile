@@ -1,11 +1,6 @@
 pipeline {
     agent any
     
-    environment {
-        NETLIFY_SITE_ID = credentials('cca50abf-c688-433b-b11b-825d72980ef4')
-        NETLIFY_AUTH_TOKEN = credentials('netlify-token')
-    }
-    
     stages {
         stage('Checkout Code') {
             steps {
@@ -13,15 +8,15 @@ pipeline {
             }
         }
         
-        stage('Install Dependencies & Deploy') {
+        stage('Test Docker') {
             steps {
                 script {
                     docker.image('node:20-alpine').inside('-u root:root') {
                         sh '''
-                            npm install
-                            npm install -g netlify-cli
-                            npm run build || echo "No build script found"
-                            netlify deploy --prod --dir=. --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
+                            echo "Testing Docker..."
+                            node --version
+                            npm --version
+                            echo "Docker is working!"
                         '''
                     }
                 }
